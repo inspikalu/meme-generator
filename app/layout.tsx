@@ -23,7 +23,7 @@ export default function RootLayout({
         <meta name="dscvr:canvas:version" content="vNext" />
         <meta
           name="og:image"
-          content="https://my-canvas.com/preview-image.png"
+          content="https://meme-generator-orpin-iota.vercel.app/meme.png"
         />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </Head>
