@@ -101,6 +101,19 @@ export default function Home() {
       }
     }
   };
+  const handleDownload = () => {
+    if (!selectedMeme) {
+      return handleShowToast("No meme selected to download");
+    }
+
+    const link = document.createElement("a");
+    link.href = selectedMeme.url;
+    link.target = "_blank";
+    link.download = selectedMeme.name || "meme.png";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   return (
     <>
@@ -108,40 +121,15 @@ export default function Home() {
       <div className="flex flex-col md:flex-row w-full items-start justify-between p-4 gap-3">
         <div className="flex flex-col items-end gap-3 md:aspect-square h-96 w-full md:w-[50%]">
           <button
-            className="bg-[#979F79] text-[#272E10] px-4 py-2 rounded-lg font-bold"
-            onClick={() => console.log(memes)}
+            className={`bg-[#979F79] text-[#272E10] px-4 py-2 rounded-lg font-bold ${
+              !selectedMeme ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+            onClick={handleDownload}
+            disabled={!selectedMeme}
           >
             Download Image
           </button>
-          {/* <div className="bg-[#989D7F] relative border-4 border-[#313519] flex flex-row items-center justify-center p-2">
-            {selectedMeme && (
-              <>
-                {!isLoaded && (
-                  <div className="absolute inset-0 flex w-full h-full items-center justify-center">
-                    <div className="w-16 h-16 border-t-4 border-[#313519] rounded-full animate-spin"></div>
-                  </div>
-                )}
-                <Image
-                  alt={selectedMeme.name}
-                  src={selectedMeme.url}
-                  width={selectedMeme.width}
-                  height={selectedMeme.height}
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "contain",
-                  }}
-                  priority
-                  onLoad={() => setIsLoaded(true)}
-                  onError={() => {
-                    setIsLoaded(true); // In case of error, we still want to hide the spinner
-                    setToastMessage("Failed to load image.");
-                  }}
-                />
-              </>
-            )}
-          </div> */}
-          <div className="bg-[#989D7F] relative border-4 border-[#313519] flex items-center justify-center p-2 w-full h-full max-w-[500px] max-h-[500px] overflow-hidden">
+          <div className="bg-[#989D7F] relative border-4 border-[#313519] flex items-center justify-center p-2 w-full h-full  max-h-[500px] overflow-hidden">
             {selectedMeme && (
               <>
                 {!isLoaded && (
