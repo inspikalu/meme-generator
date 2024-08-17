@@ -9,6 +9,17 @@ const pressStart2p = Press_Start_2P({ weight: "400", subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Meme Generator",
   description: "Create Fantastic memes",
+  openGraph: {
+    url: "https://meme-generator-orpin-iota.vercel.app",
+    title: "Meme Generator",
+    description: "Create Fantastic Memes",
+    type: "website",
+    siteName: "Meme Generator",
+  },
+  keywords: "meme, meme generator, how to generate meme",
+  other: {
+    "dscvr:canvas:version": "vNext",
+  },
 };
 
 export default function RootLayout({
@@ -19,18 +30,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <Head>
-        {/* Open Graph Metadata */}
-        <meta property="og:title" content="Meme Generator" />
-        <meta property="og:description" content="Create Fantastic memes" />
-        <meta
-          property="og:image"
-          content="https://meme-generator-orpin-iota.vercel.app/meme.png
-"
-        />
-        <meta property="og:url" content="https://meme-generator-orpin-iota.vercel.app" />
-        <meta property="og:type" content="website" />
-        <meta property="og:site_name" content="Meme Generator" />
-
         {/* Other Metadata */}
         <meta name="dscvr:canvas:version" content="vNext" />
       </Head>
