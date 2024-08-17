@@ -173,7 +173,7 @@ export default function Home() {
               memes.slice(0, visibleCount).map((item) => (
                 <div
                   key={item.id}
-                  className="w-36 h-36 bg-[#8D8C6E] flex items-center justify-center relative border-4 border-[#313519] aspect-square cursor-pointer"
+                  className="w-36 min-w-[200px] h-36 bg-[#8D8C6E] flex items-center justify-center relative border-4 border-[#313519] aspect-square cursor-pointer"
                 >
                   <Image
                     alt={item.name}
