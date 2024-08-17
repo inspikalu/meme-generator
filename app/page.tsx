@@ -179,7 +179,7 @@ export default function Home() {
                     alt={item.name}
                     src={item.url}
                     fill
-                    style={{ objectFit: "cover" }}
+                    style={{ objectFit: "cover", minWidth:"200px" }}
                     sizes="(max-width: 640px) 100vw, 50vw"
                     onMouseOver={() => setCurrentTitle(`${item.name}`)}
                     onMouseOut={() => {
