@@ -19,14 +19,22 @@ export default function RootLayout({
   return (
     <html lang="en">
       <Head>
-        {/* Custom Metadata */}
-        <meta name="dscvr:canvas:version" content="vNext" />
+        {/* Open Graph Metadata */}
+        <meta property="og:title" content="Meme Generator" />
+        <meta property="og:description" content="Create Fantastic memes" />
         <meta
-          name="og:image"
-          content="https://meme-generator-orpin-iota.vercel.app/meme.png"
+          property="og:image"
+          content="https://meme-generator-orpin-iota.vercel.app/meme.png
+"
         />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta property="og:url" content="https://meme-generator-orpin-iota.vercel.app" />
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="Meme Generator" />
+
+        {/* Other Metadata */}
+        <meta name="dscvr:canvas:version" content="vNext" />
       </Head>
+
       <body className={`${inter.className} ${pressStart2p.className}`}>
         {children}
       </body>
