@@ -41,9 +41,12 @@ export default function Home() {
       [name]: value,
     }));
   };
-
+  const setBodyHeight = (height: number) => {
+    document.body.style.height = height ? `${height}px` : "";
+  };
   useEffect(() => {
     handleGetMemes(setMemes);
+    setBodyHeight(1000);
   }, []);
 
   const handleMakeMeme = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -179,7 +182,7 @@ export default function Home() {
                     alt={item.name}
                     src={item.url}
                     fill
-                    style={{ objectFit: "cover", minWidth:"200px" }}
+                    style={{ objectFit: "cover", minWidth: "200px" }}
                     sizes="(max-width: 640px) 100vw, 50vw"
                     onMouseOver={() => setCurrentTitle(`${item.name}`)}
                     onMouseOut={() => {
