@@ -84,8 +84,7 @@ export default function Home() {
     if (!canvasClient || !user) return;
     const html = `
     <h1>New canvas post!</h1>
-    <p>Check out the meme Created by <b>${user.username}</b></p>
-    <img src="${selectedMeme?.url}" alt="${selectedMeme?.name}" style="width:${selectedMeme?.width}; height: auto;" />
+    <p>Check out the meme Created by <b>${user.username} at ${selectedMeme?.url}</b></p>
     `;
     canvasClient.createPost(html);
   };
