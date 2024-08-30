@@ -211,7 +211,7 @@ export default function Home() {
       {toastMessage && <Toast message={toastMessage} onClose={handleClose} />}
       <div className="flex flex-col md:flex-row w-full items-start justify-between p-4 gap-3">
         <div className="flex flex-col items-end gap-3 md:aspect-square h-96 w-full md:w-[50%]">
-        <button
+          <button
             className={`bg-[#979F79] text-[#272E10] px-4 py-2 rounded-lg font-bold ${
               !selectedMeme ? "opacity-50 cursor-not-allowed" : ""
             }`}
