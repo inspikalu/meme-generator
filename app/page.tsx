@@ -1,11 +1,102 @@
 "use client";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { handleGetMemes, handleLoadMore } from "@/app/utils/helpers";
 import { Meme } from "@/app/utils/constants";
 import Toast from "@/app/components/Toast";
+import { CanvasClient, CanvasInterface } from "@dscvr-one/canvas-client-sdk";
+import { validateHostMessage } from "./dscvr";
 
+type InitResponse = {
+  type: "lifecycle:init-response";
+  untrusted: {
+    user?:
+      | { id: string; username: string; avatar?: string | undefined }
+      | undefined;
+    content?: { id: string; portalId: string; portalName: string } | undefined;
+  };
+  trustedBytes: string;
+};
+let canvasClient: CanvasClient | undefined = new CanvasClient();
 export default function Home() {
+  const copyToClipboardOriginalMessage = "Copy username to clipboard";
+
+  // React state hooks
+  const [canvasClient] = useState<CanvasClient | undefined>(new CanvasClient());
+  const [isReady, setIsReady] = useState(false);
+  const [user, setUser] = useState<CanvasInterface.Lifecycle.User | undefined>(
+    undefined
+  );
+  const [content, setContent] = useState<
+    CanvasInterface.Lifecycle.Content | undefined
+  >(undefined);
+  const [currentReaction, setCurrentReaction] = useState<string | undefined>(
+    undefined
+  );
+  const [copyToClipboardLabel, setCopyToClipboardLabel] = useState(
+    copyToClipboardOriginalMessage
+  );
+
+  // useRef for ResizeObserver to keep it stable between renders
+  const resizeObserver = useRef<ResizeObserver>();
+
+  // Function to start the process
+  const start = async () => {
+    if (!canvasClient) return;
+
+    try {
+      const response = await canvasClient.ready();
+      const isValidResponse = await validateHostMessage(response);
+
+      if (!isValidResponse) return;
+
+      setIsReady(canvasClient.isReady);
+
+      if (response) {
+        setUser(response.untrusted.user);
+        setContent(response.untrusted.content);
+      }
+
+      canvasClient.onContentReaction((reaction) => {
+        if (!validateHostMessage(reaction)) return;
+
+        if (reaction.untrusted.status === "cleared") {
+          setCurrentReaction("");
+        } else {
+          setCurrentReaction(reaction.untrusted.reaction);
+        }
+      });
+    } catch (error) {
+      console.error("An error occurred:", error);
+    }
+  };
+
+  // Function to create a new post
+  const createNewPost = () => {
+    if (!canvasClient || !user) return;
+    const html = `<h1>New canvas post!</h1><p>Check out the meme Created by <b>${user.username}</b> <img src="${selectedMeme?.url}" alt="${selectedMeme?.name}" style="width:${selectedMeme?.width}; height: auto;" /></p>`;
+    canvasClient.createPost(html);
+  };
+
+  // Function to set body height
+  const setBodyHeight = (height: number) => {
+    document.body.style.height = height ? `${height}px` : "";
+  };
+
+  // useEffect to handle side effects
+  useEffect(() => {
+    resizeObserver.current = new ResizeObserver(() => canvasClient?.resize());
+
+    if (canvasClient) {
+      start(); // Start the process when the component mounts
+    }
+
+    // Cleanup on unmount
+    return () => {
+      resizeObserver.current?.disconnect();
+    };
+  }, [canvasClient]);
+
   const [memes, setMemes] = useState<Meme[] | null>([]);
   const [visibleCount, setVisibleCount] = useState<number>(10);
   const [currentTitle, setCurrentTitle] = useState("");
@@ -41,9 +132,7 @@ export default function Home() {
       [name]: value,
     }));
   };
-  const setBodyHeight = (height: number) => {
-    document.body.style.height = height ? `${height}px` : "";
-  };
+
   useEffect(() => {
     handleGetMemes(setMemes);
     setBodyHeight(1000);
@@ -90,7 +179,6 @@ export default function Home() {
         url: data.newImage.url,
       });
       setIsLoadingMeme(false);
-      console.log(data.newImage);
     } catch (error: any) {
       setIsLoadingMeme(false);
 
@@ -123,7 +211,7 @@ export default function Home() {
       {toastMessage && <Toast message={toastMessage} onClose={handleClose} />}
       <div className="flex flex-col md:flex-row w-full items-start justify-between p-4 gap-3">
         <div className="flex flex-col items-end gap-3 md:aspect-square h-96 w-full md:w-[50%]">
-          <button
+        <button
             className={`bg-[#979F79] text-[#272E10] px-4 py-2 rounded-lg font-bold ${
               !selectedMeme ? "opacity-50 cursor-not-allowed" : ""
             }`}
@@ -131,6 +219,15 @@ export default function Home() {
             disabled={!selectedMeme}
           >
             Download Image
+          </button>
+          <button
+            className={`bg-[#979F79] text-[#272E10] px-4 py-2 rounded-lg font-bold ${
+              !selectedMeme ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+            onClick={createNewPost}
+            disabled={!selectedMeme}
+          >
+            Post Image
           </button>
           <div className="bg-[#989D7F] relative border-4 border-[#313519] flex items-center justify-center p-2 w-full h-full  max-h-[500px] overflow-hidden">
             {selectedMeme && (
@@ -176,7 +273,7 @@ export default function Home() {
               memes.slice(0, visibleCount).map((item) => (
                 <div
                   key={item.id}
-                  className="w-36 min-w-[200px] h-36 bg-[#8D8C6E] flex items-center justify-center relative border-4 border-[#313519] aspect-square cursor-pointer"
+                  className="w-36 min-w-[150px] h-36 bg-[#8D8C6E] flex items-center justify-center relative border-4 border-[#313519] aspect-square cursor-pointer"
                 >
                   <Image
                     alt={item.name}
