@@ -17,12 +17,20 @@ type InitResponse = {
   };
   trustedBytes: string;
 };
-let canvasClient: CanvasClient | undefined = new CanvasClient();
 export default function Home() {
   const copyToClipboardOriginalMessage = "Copy username to clipboard";
 
   // React state hooks
-  const [canvasClient] = useState<CanvasClient | undefined>(new CanvasClient());
+  const [canvasClient, setCanvasClient] = useState<CanvasClient | undefined>(
+    undefined
+  );
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setCanvasClient(new CanvasClient());
+    }
+  }, []);
+
   const [isReady, setIsReady] = useState(false);
   const [user, setUser] = useState<CanvasInterface.Lifecycle.User | undefined>(
     undefined
@@ -74,7 +82,11 @@ export default function Home() {
   // Function to create a new post
   const createNewPost = () => {
     if (!canvasClient || !user) return;
-    const html = `<h1>New canvas post!</h1><p>Check out the meme Created by <b>${user.username}</b> <img src="${selectedMeme?.url}" alt="${selectedMeme?.name}" style="width:${selectedMeme?.width}; height: auto;" /></p>`;
+    const html = `
+    <h1>New canvas post!</h1>
+    <p>Check out the meme Created by <b>${user.username}</b></p>
+    <img src="${selectedMeme?.url}" alt="${selectedMeme?.name}" style="width:${selectedMeme?.width}; height: auto;" />
+    `;
     canvasClient.createPost(html);
   };
 
@@ -83,12 +95,13 @@ export default function Home() {
     document.body.style.height = height ? `${height}px` : "";
   };
 
-  // useEffect to handle side effects
   useEffect(() => {
-    resizeObserver.current = new ResizeObserver(() => canvasClient?.resize());
+    if (typeof window !== "undefined") {
+      resizeObserver.current = new ResizeObserver(() => canvasClient?.resize());
 
-    if (canvasClient) {
-      start(); // Start the process when the component mounts
+      if (canvasClient) {
+        start(); // Start the process when the component mounts
+      }
     }
 
     // Cleanup on unmount
